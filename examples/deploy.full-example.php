@@ -11,23 +11,25 @@ require 'vendor/florianmoser/bedrock-deployer/recipe/filetransfer.php';
 require 'vendor/florianmoser/bedrock-deployer/recipe/sage.php';
 require 'vendor/florianmoser/bedrock-deployer/recipe/trellis.php';
 
+set('bin/composer', function () { return 'composer'; });
+
 // Configuration
 
 // Common Deployer config
-set( 'repository', 'ssh://git@github.org/vendor/repository.git' );
+set( 'repository', 'git@github.com:example/example.git' );
 set( 'shared_dirs', [
 	'web/app/uploads'
 ] );
 
 // Bedrock DB config
 set( 'vagrant_dir', dirname( __FILE__ ) . '/../trellis' );
-set( 'vagrant_root', '/srv/www/domain.com/current' );
+set( 'vagrant_root', '/srv/www/example.com/current' );
 
-// Bedrock DB and Sage config
+// Bedrock DB config
 set( 'local_root', dirname( __FILE__ ) );
 
 // Sage config
-set( 'theme_path', 'web/app/themes/your-theme' );
+set( 'theme_path', 'web/app/themes/template' );
 
 // File transfer config
 set( 'sync_dirs', [
@@ -39,15 +41,15 @@ set( 'sync_dirs', [
 
 set( 'default_stage', 'staging' );
 
-host( 'your-host.com/staging' )
+host( 'stage.example.com' )
 	->stage( 'staging' )
-	->user( 'your-username' )
-	->set( 'deploy_path', '/staging.domain.com/deploy' );
+	->user( 'user' )
+	->set( 'deploy_path', '~/stage.example.com/deploy' );
 
-host( 'your-host.com/production' )
+host( 'stillhammerhaus.de' )
 	->stage( 'production' )
-	->user( 'your-username' )
-	->set( 'deploy_path', '/domain.com/deploy' );
+	->user( 'user' )
+	->set( 'deploy_path', '~/httpdocs' );
 
 
 // Tasks
@@ -62,12 +64,11 @@ task( 'deploy', [
 	'trellis:remove',
 	'deploy:shared',
 	'deploy:writable',
-	'bedrock:vendors',
-	'sage:vendors',
-	'push:assets',
 	'bedrock:env',
+	'bedrock:vendors',
 	'deploy:clear_paths',
 	'deploy:symlink',
+	'push:db',
 	'deploy:unlock',
 	'cleanup',
 	'success',
