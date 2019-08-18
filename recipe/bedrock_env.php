@@ -71,6 +71,7 @@ task( 'bedrock:env', function () {
     $wp_env  = askChoice( get( 'stage' ) . ' server ENV', ['development' => 'development', 'staging' => 'staging', 'production' => 'production'], 'staging' );
     $wp_prot = askChoice( get( 'stage' ) . ' server protocol', ['http' => 'http', 'https' => 'https'], 'http' );
     $wp_domain = ask( get( 'stage' ) . ' server WordPress domain (ie domain.com)' );
+    $acf_key = ask( get( 'stage' ) . ' ACF Pro Key' );
 
 
     ob_start();
@@ -85,6 +86,7 @@ WP_HOME='{$wp_prot}://{$wp_domain}'
 WP_SITEURL='{$wp_prot}://{$wp_domain}/wp'
 DOMAIN_CURRENT_SITE='{$wp_domain}'
 PROTOCOL='{$wp_prot}'
+ACF_PRO_KEY='{$acf_key}'
 
 EOL;
 
