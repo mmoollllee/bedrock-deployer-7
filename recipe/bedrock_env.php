@@ -73,6 +73,9 @@ task( 'bedrock:env', function () {
     $wp_domain = ask( get( 'stage' ) . ' server WordPress domain (ie domain.com)' );
     $acf_key = ask( get( 'stage' ) . ' ACF Pro Key' );
 
+    $wpcachehome = '{{current_path}}/app/plugins/wp-super-cache/';
+    $wpcachepath = '{{current_path}}/app/cache/';
+
 
     ob_start();
 
@@ -87,6 +90,8 @@ WP_SITEURL='{$wp_prot}://{$wp_domain}/wp'
 DOMAIN_CURRENT_SITE='{$wp_domain}'
 PROTOCOL='{$wp_prot}'
 ACF_PRO_KEY='{$acf_key}'
+WPCACHEHOME='{$wpcachehome}'
+CACHE_PATH='{$wpcachepath}'
 
 EOL;
 
