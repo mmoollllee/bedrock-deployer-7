@@ -1,5 +1,5 @@
 {
-    "name": "florianmoser/bedrock-deployer",
+    "name": "mmoollllee/bedrock-deployer",
     "description": "Deployer recipes for Roots Bedrock",
     "require": {
         "deployer/deployer": ">=6.0",
@@ -7,6 +7,10 @@
     },
     "license": "MIT",
     "authors": [
+        {
+            "name": "Moritz Graf",
+            "email": "info@moritz-graf.de"
+        },
         {
             "name": "Florian Moser",
             "email": "info@novalab.ch"
