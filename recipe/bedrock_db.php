@@ -128,6 +128,8 @@ task( 'pull:db', function () use ( $getLocalEnv, $getRemoteEnv, $urlToDomain ) {
     runLocally( "cd {{vagrant_dir}} && vagrant ssh -- -t \"cd {{vagrant_root}}; wp search-replace '{$remoteUrl}' '{$localUrl}' --skip-themes --url='{$remoteDomain}' --network\"" );
     // Also replace domain (multisite WP also uses domains without protocol in DB)
     runLocally( "cd {{vagrant_dir}} && vagrant ssh -- -t \"cd {{vagrant_root}}; wp search-replace '{$remoteDomain}' '{$localDomain}' --skip-themes --url='{$remoteDomain}' --network\"" );
+    // Flush Permalinks
+    runLocally( "cd {{vagrant_dir}} && vagrant ssh -- -t \"cd {{vagrant_root}}; wp rewrite flush --hard\"" );
 
     // Cleanup exports on local machine
     writeln( "<comment>Cleaning up {$downloadedExport} on local machine</comment>" );
@@ -189,6 +191,8 @@ task( 'push:db', function () use ( $getLocalEnv, $getRemoteEnv, $urlToDomain ) {
     run( "cd {{current_path}} && wp search-replace \"{$localUrl}\" \"{$remoteUrl}\" --skip-themes --url='{$localDomain}' --network" );
     // Also replace domain (multisite WP also uses domains without protocol in DB)
     run( "cd {{current_path}} && wp search-replace \"{$localDomain}\" \"{$remoteDomain}\" --skip-themes --url='{$localDomain}' --network" );
+    // Flush Permalinks
+    run( "cd {{current_path}} && wp rewrite flush --hard" );
 
     // Cleanup uploaded file
     writeln( "<comment>Cleaning up {$uploadedExport} from server</comment>" );
