@@ -77,8 +77,8 @@ task( 'bedrock:env', function () {
     set('absolute_path', function () {
         return run('pwd');
     });
-    $wpcachehome = '{{absolute_path}}/web/app/plugins/wp-super-cache/';
-    $wpcachepath = '{{absolute_path}}/web/app/cache/';
+    $wpcachehome = '{{absolute_path}}/current/web/app/plugins/wp-super-cache/';
+    $wpcachepath = '{{absolute_path}}/current/web/app/cache/';
 
 
     ob_start();
