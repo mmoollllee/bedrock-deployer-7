@@ -74,9 +74,11 @@ task( 'bedrock:env', function () {
     $acf_key = ask( get( 'stage' ) . ' ACF Pro Key' );
 
     run( 'cd {{current_path}}' );
-    $working_path = workingPath();
-    $wpcachehome = $working_path . 'web/app/plugins/wp-super-cache/';
-    $wpcachepath = $working_path . 'web/app/cache/';
+    set('absolute_path', function () {
+        return run('pwd');
+    });
+    $wpcachehome = '{{absolute_path}}web/app/plugins/wp-super-cache/';
+    $wpcachepath = '{{absolute_path}}web/app/cache/';
 
 
     ob_start();
