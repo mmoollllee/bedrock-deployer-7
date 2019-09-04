@@ -3,6 +3,7 @@
 namespace Deployer;
 
 require 'vendor/deployer/deployer/recipe/common.php';
+require 'vendor/mmoollllee/bedrock-deployer/recipe/prepare.php';
 require 'vendor/mmoollllee/bedrock-deployer/recipe/bedrock_db.php';
 require 'vendor/mmoollllee/bedrock-deployer/recipe/bedrock_env.php';
 require 'vendor/mmoollllee/bedrock-deployer/recipe/bedrock_misc.php';
@@ -11,9 +12,9 @@ require 'vendor/mmoollllee/bedrock-deployer/recipe/filetransfer.php';
 require 'vendor/mmoollllee/bedrock-deployer/recipe/sage.php';
 require 'vendor/mmoollllee/bedrock-deployer/recipe/trellis.php';
 
-set('bin/composer', function () { return 'composer'; });
-
 // Configuration
+
+set('bin/composer', function () { return 'composer'; });
 
 // Common Deployer config
 set( 'repository', 'git@github.com:example/example.git' );
@@ -44,12 +45,13 @@ set( 'default_stage', 'staging' );
 host( 'stage.example.com' )
 	->stage( 'staging' )
 	->user( 'user' )
-	->set( 'deploy_path', '~/stage.example.com/deploy' );
+	->set( 'deploy_path', '~/stage/deploy' );
+// Set Webspace-Path to ~/stage/deploy/current/web/
 
 host( 'stillhammerhaus.de' )
 	->stage( 'production' )
 	->user( 'user' )
-	->set( 'deploy_path', '~/httpdocs' );
+	->set( 'deploy_path', '~/httpdocs/deploy' );
 
 
 // Tasks
@@ -57,18 +59,19 @@ host( 'stillhammerhaus.de' )
 // Deployment flow
 desc( 'Deploy your project' );
 task( 'deploy', [
-	'deploy:prepare',
+	'bedrock:prepare',
 	'deploy:lock',
 	'deploy:release',
 	'deploy:update_code',
 	'trellis:remove',
 	'deploy:shared',
 	'deploy:writable',
+	'deploy:symlink',
 	'bedrock:env',
 	'bedrock:vendors',
 	'deploy:clear_paths',
-	'deploy:symlink',
 	'push:db',
+	'push:files',
 	'deploy:unlock',
 	'cleanup',
 	'success',
