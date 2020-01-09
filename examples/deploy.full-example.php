@@ -69,6 +69,7 @@ task( 'deploy', [
 	'deploy:symlink',
 	'bedrock:env',
 	'bedrock:vendors',
+	'bedrock:wp-scss',
 	'deploy:clear_paths',
 	'push:db',
 	'push:files',
