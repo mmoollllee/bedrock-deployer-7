@@ -4,6 +4,8 @@ namespace Deployer;
 
 use Dotenv\Dotenv;
 
+require 'vendor/autoload.php';
+
 /**
  * Returns the local WP URL or false, if not found.
  *
