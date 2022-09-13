@@ -14,7 +14,7 @@ require 'vendor/mmoollllee/bedrock-deployer/recipe/trellis.php';
 
 // Configuration
 // set('bin/composer', function () { return 'composer'; });
-set('bin/composer', function () { return '/opt/plesk/php/7.4/bin/php /usr/lib/plesk-9.0/composer.phar'; });
+set('bin/composer', function () { return '/opt/plesk/php/8.1/bin/php /usr/lib/plesk-9.0/composer.phar'; });
 
 // Common Deployer config
 set( 'repository', 'git@github.com:example/example.git' );
@@ -35,14 +35,14 @@ set( 'sync_dirs', [
 
 // Hosts
 
-host( 'dev.example.com' )
-	->set('labels', ['stage' => 'dev'])
+host( 'stage.example.com' )
+	->set('labels', ['stage' => 'stage'])
 	->set('remote_user', 'user')
 	->set( 'deploy_path', '~/stage/deploy' );
 // Set Webspace-Path to ~/stage/deploy/current/web/
 
 host( 'example.com' )
-	->set('labels', ['stage' => 'live'])
+	->set('labels', ['stage' => 'production'])
 	->set('remote_user', 'user')
 	->set( 'deploy_path', '~/httpdocs/deploy' );
 
@@ -72,7 +72,7 @@ task( 'deploy', [
 ] );
 
 desc( 'Deploy only app' );
-task( 'push', [
+task( 'update', [
 	'bedrock:prepare',
 	'deploy:lock',
 	'deploy:release',
