@@ -1,5 +1,4 @@
 <?php
-
 namespace Deployer;
 
 require 'vendor/deployer/deployer/recipe/common.php';
@@ -15,6 +14,7 @@ require 'vendor/mmoollllee/bedrock-deployer/recipe/trellis.php';
 // Configuration
 // set('bin/composer', function () { return 'composer'; });
 set('bin/composer', function () { return '/opt/plesk/php/8.1/bin/php /usr/lib/plesk-9.0/composer.phar'; });
+set('composer_options', 'install --verbose --no-interaction');
 
 // Common Deployer config
 set( 'repository', 'git@github.com:example/example.git' );
