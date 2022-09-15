@@ -19,6 +19,17 @@ namespace Deployer;
 
 require(__DIR__ . '/../lib/functions.php');
 
+set('bin/wp', function () {
+    if (commandExist('wp')) {
+        return '{{bin/php}} ' . which('wp');
+    }
+
+    warning("WP CLI binary wasn't found. Installing latest WP CLI to \"{{deploy_path}}/.dep/composer.phar\".");
+    run("cd {{deploy_path}} && curl -sS -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar");
+    run('mv {{deploy_path}}/wp-cli.phar {{deploy_path}}/.dep/wp-cli.phar');
+    return '{{bin/php}} {{deploy_path}}/.dep/wp-cli.phar';
+});
+
 desc('Pulls DB from server and installs it locally, after having made a backup of local DB');
 task('pull:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
 
@@ -26,7 +37,7 @@ task('pull:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     $exportFilename = '_db_export_' . date('Y-m-d_H-i-s') . '.sql';
     $exportAbsFile  = get('deploy_path') . '/' . $exportFilename;
     writeln("<comment>Exporting server DB to {$exportAbsFile}</comment>");
-    run("cd {{current_path}} && wp db export {$exportAbsFile}");
+    run("cd {{current_path}} && {{bin/wp}} db export {$exportAbsFile}");
 
     // Download db export
     $downloadedExport = get('local_root') . '/' . $exportFilename;
@@ -103,15 +114,15 @@ task('push:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     $backupFilename = '_db_backup_' . date('Y-m-d_H-i-s') . '.sql';
     $backupAbsFile  = get('deploy_path') . '/' . $backupFilename;
     writeln("<comment>Making backup of DB on server to {$backupAbsFile}</comment>");
-    run("cd {{current_path}} && wp db export {$backupAbsFile}");
+    run("cd {{current_path}} && {{bin/wp}} db export {$backupAbsFile}");
 
     // Empty server DB
     writeln("<comment>Reset server DB</comment>");
-    run("cd {{current_path}} && wp db reset");
+    run("cd {{current_path}} && {{bin/wp}} db reset");
 
     // Import export file
     writeln("<comment>Importing {$uploadedExport}</comment>");
-    run("cd {{current_path}} && wp db import {$uploadedExport}");
+    run("cd {{current_path}} && {{bin/wp}} db import {$uploadedExport}");
 
     // Load local .env file and get local WP URL
     if (!$localUrl = $getLocalEnv()) {
@@ -132,11 +143,11 @@ task('push:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     // In the DB however, this new remote domain doesn't exist yet before search-replace. So we have
     // to specify the old (local) domain as --url parameter.
     writeln("<comment>Updating the URLs in the DB</comment>");
-    run("cd {{current_path}} && wp search-replace \"{$localUrl}\" \"{$remoteUrl}\" --skip-themes --url='{$localDomain}' --network");
+    run("cd {{current_path}} && {{bin/wp}} search-replace \"{$localUrl}\" \"{$remoteUrl}\" --skip-themes --url='{$localDomain}' --network");
     // Also replace domain (multisite WP also uses domains without protocol in DB)
-    run("cd {{current_path}} && wp search-replace \"{$localDomain}\" \"{$remoteDomain}\" --skip-themes --url='{$localDomain}' --network");
+    run("cd {{current_path}} && {{bin/wp}} search-replace \"{$localDomain}\" \"{$remoteDomain}\" --skip-themes --url='{$localDomain}' --network");
     // Flush Permalinks
-    run( "cd {{current_path}} && wp rewrite flush --hard" );
+    run( "cd {{current_path}} && {{bin/wp}} rewrite flush --hard" );
     
     // Cleanup uploaded file
     writeln("<comment>Cleaning up {$uploadedExport} from server</comment>");
