@@ -64,14 +64,13 @@ task( 'bedrock:env', function () {
     writeln( '<comment>Generating .env file</comment>' );
 
     // Ask for credentials
+    $wp_domain = ask( get( 'stage' ) . ' server WordPress domain (ie domain.com)' );
     $db_name = ask( get( 'stage' ) . ' server WordPress DB name' );
     $db_user = ask( get( 'stage' ) . ' server WordPress DB user' );
     $db_pass = askHiddenResponse( get( 'stage' ) . ' server WordPress DB password' );
     $db_host = ask( get( 'stage' ) . ' server WordPress DB host', '127.0.0.1' );
     $wp_env  = askChoice( get( 'stage' ) . ' server ENV', ['development' => 'development', 'staging' => 'staging', 'production' => 'production'], 'staging' );
     $wp_prot = askChoice( get( 'stage' ) . ' server protocol', ['http' => 'http', 'https' => 'https'], 'http' );
-    $wp_domain = ask( get( 'stage' ) . ' server WordPress domain (ie domain.com)' );
-    $acf_key = ask( get( 'stage' ) . ' ACF Pro Key' );
 
     set('absolute_path', function () {
         return run('cd {{deploy_path}} && pwd');
@@ -92,7 +91,6 @@ WP_HOME='{$wp_prot}://{$wp_domain}'
 WP_SITEURL='{$wp_prot}://{$wp_domain}/wp'
 DOMAIN_CURRENT_SITE='{$wp_domain}'
 PROTOCOL='{$wp_prot}'
-ACF_PRO_KEY='{$acf_key}'
 WPCACHEHOME='{$wpcachehome}'
 CACHE_PATH='{$wpcachepath}'
 
