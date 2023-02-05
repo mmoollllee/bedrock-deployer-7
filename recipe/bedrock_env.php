@@ -64,9 +64,9 @@ task( 'bedrock:env', function () {
     writeln( '<comment>Generating .env file</comment>' );
 
     // Ask for credentials
-    $wp_domain = ask( get( 'stage' ) . ' server WordPress domain (ie domain.com)' );
-    $db_name = ask( get( 'stage' ) . ' server WordPress DB name' );
-    $db_user = ask( get( 'stage' ) . ' server WordPress DB user' );
+    $wp_domain = ask( get( 'stage' ) . ' server WordPress domain (ie domain.com)', get('domain')  );
+    $db_name = ask( get( 'stage' ) . ' server WordPress DB name', $wp_domain );
+    $db_user = ask( get( 'stage' ) . ' server WordPress DB user', $wp_domain );
     $db_pass = askHiddenResponse( get( 'stage' ) . ' server WordPress DB password' );
     $db_host = ask( get( 'stage' ) . ' server WordPress DB host', '127.0.0.1' );
     $wp_env  = askChoice( get( 'stage' ) . ' server ENV', ['development' => 'development', 'staging' => 'staging', 'production' => 'production'], 'staging' );

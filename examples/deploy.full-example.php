@@ -1,57 +1,36 @@
 <?php
 
 /**
- * Deploy with `php vendor/bin/dep deploy stage`
+ * - Deploy with `php vendor/bin/dep deploy stage`
+ * - Set Webspace Path to 'current/web'
  */
 
 namespace Deployer;
 
-require 'vendor/deployer/deployer/recipe/common.php';
-require 'vendor/mmoollllee/bedrock-deployer/recipe/recipes.php';
+// Configurate Hostname of stage & production
+$hostname = 'example.com';
+$stage_hostname = $hostname;
 
-// Configuration
-set('bin/composer', function () { return '/opt/plesk/php/8.1/bin/php /usr/lib/plesk-9.0/composer.phar'; }); // set('bin/composer', function () { return 'composer'; });
-set('composer_options', 'install --verbose --no-interaction');
-set('bin/wp', function () {
-	run("cd {{deploy_path}} && curl -sS -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar");
-	run('mv {{deploy_path}}/wp-cli.phar {{deploy_path}}/.dep/wp-cli.phar');
-	return '{{bin/php}} {{deploy_path}}/.dep/wp-cli.phar';
-});
+// get directory of projects. Will be used for domain name,...
+set( 'local_root', dirname( __FILE__ ) );
 
-// Common Deployer config
-set( 'repository', 'git@github.com:example/example.git' );
-set( 'shared_dirs', ['web/app/uploads'] );
+require 'vendor/mmoollllee/bedrock-deployer/config/config.php';
 
-// Bedrock DB config
-set( 'vagrant_dir', dirname( __FILE__ ) . '/../trellis' );
-set( 'vagrant_root', '/srv/www/example.com/current' );
-
-// Bedrock DB and Sage config
-set( 'local_root', dirname( __FILE__ ) );;
-set( 'theme_path', 'web/app/themes/template' );
-
-// File transfer config
-set( 'sync_dirs', [
-	dirname( __FILE__ ) . '/web/app/uploads/' => '{{deploy_path}}/shared/web/app/uploads/',
-] );
-
-// Hosts
-
+// set 
 host( 'stage' )
-	->setHostname( 'example.com' )
-	->set('remote_user', 'user')
-	->set( 'deploy_path', '~/httpdocs/deploy' );
-// Set Webspace-Path to ~/stage/deploy/current/web/
+	->setHostname( $stage_hostname )
+	->set('remote_user', function () { return getenv('STAGE_USERNAME') ?: getenv('USERNAME'); })
+	->set('deploy_path', function () { return getenv('STAGE_DIR'); });
 
 host( 'prod' )
-	->setHostname( 'example.com' )
-	->set('remote_user', 'user')
-	->set( 'deploy_path', '~/httpdocs/deploy' );
-
+	->setHostname( $hostname )
+	->set('remote_user', function () { return getenv('USERNAME'); })
+	->set('deploy_path', function () { return getenv('DIR'); });
 
 // Tasks
 desc( 'Deploy whole project' );
 task( 'deploy', [
+	'deployer:check',
 	'bedrock:prepare',
 	'deploy:lock',
 	'deploy:release',
@@ -73,6 +52,7 @@ task( 'deploy', [
 
 desc( 'Deploy only app' );
 task( 'update', [
+	'deployer:check',
 	'bedrock:prepare',
 	'deploy:lock',
 	'deploy:release',

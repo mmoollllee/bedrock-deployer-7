@@ -3,7 +3,7 @@
 
 Trellis provides a powerful deployment with Ansible. But if you would like to deploy Bedrock only while running a custom process, Deployer is a quick and simple alternative.
 
-Maybe you are even trying to deploy Bedrock to a shared hosting. Depending on your hosting environment, this *may* be possible. Check out [florianmoser/plesk-deployer](https://github.com/FlorianMoser/plesk-deployer).
+Maybe you are even trying to deploy Bedrock to a shared hosting like Plesk. Depending on your hosting environment, this can be possible.
 
 **A word of caution:** Make sure you have a backup of your local as well as your remote files, before experimenting with deployment recipes. Files might easily get overwritten when you provide wrong paths! You are solely responsible by using the recipes provided here.
 
@@ -14,13 +14,20 @@ PHP developers who would like to deploy their Bedrock applications using Deploye
 Use Composer:
 
 ````
-$ composer require florianmoser/bedrock-deployer
+$ composer require mmoollllee/bedrock-deployer
 ````
 
-# Recipes
-This package offers several recipes to help you with your Bedrock deployment. Require each package as needed.
+Setup your Trellis & Bedrock environment and create a repository. The repository may contain a trellis and a site folder, or
+the bedrock project [example](https://github.com/mmoollllee/bedrock)
 
-These are the available recipes:
+Create a deploy.php in your project root and configure your environments. You might want to use [examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/examples/deploy.full-example.php) and have a look at its required [config file]([examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/config/config.php)). If so first run will create a `.env.deployer` and ask for your project's details.
+
+First run with `vendor/bin/dep -vvv deploy` & select target environment.
+
+# Recipes
+This package offers several recipes to help you with your Bedrock deployment. Require each package as needed or use the example configuration file in [examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/examples/deploy.full-example.php) and have a look at its required [config file]([examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/config/config.php)).
+
+The available recipes:
 
 ## Bedrock DB
 Provides tasks to export the database from the server and import it to your development machine and vice versa.
@@ -37,7 +44,7 @@ Requirements:
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/florianmoser/bedrock-deployer/recipe/bedrock_db.php';
+require 'vendor/mmoollllee/bedrock-deployer/recipe/bedrock_db.php';
 ````
 
 Requires these Deployer environment variables to be set:
@@ -207,9 +214,14 @@ Compiles the Sage assets on the local machine and then uploads them to remote se
 ## Trellis
 You will not want to use these recipes to deploy Trellis. Trellis has its own and powerful deployment process. However you might use Trellis for developing and only use these recipes to deploy Bedrock.
 
-The downside with this method is that you will have a /site as well as a /trellis directory in your repository. So both directories will be cloned to the server.
-
-This task deals with this situation:
+You might have a site & a trellis directory in your repository, or only the bedrock-style repository without site folder.
+This task deals with both situations:
 
 ### Task trellis:remove
-Will delete the remote /trellis directory and move the content of /site to /. Use this task after deployment but before symlink changes.
+Will check for a /site folder. If true it will delete the remote /trellis directory and move the content of /site to /. Use this task after deployment but before symlink changes.
+
+## Advanced Custom Fields Pro
+ACF PRO is a powerful Wordpress Plugin to build userfriendly custom fields and more. The Pro version via composer install needs a auth.json for authentification. [See official documentation on how to get it's content](https://www.advancedcustomfields.com/resources/installing-acf-pro-with-composer/).
+
+### Task bedrock:acf
+Uploads your local auth.json to the release directory.
