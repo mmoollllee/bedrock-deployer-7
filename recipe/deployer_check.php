@@ -24,6 +24,7 @@ task( 'deployer:check', function () {
 
     // Ask for credentials
     $repo = ask( 'Bedrock Repository' );
+    $branch = ask( 'Bedrock Repo Branch' , 'main');
     $prod_dir = ask( 'Production Directory', '~/httpdocs' );
     $stage_dir = ask( 'Stage Directory', '~/stage.'.get('domain') );
     $prod_user = ask( 'Production Username' );
@@ -35,6 +36,7 @@ task( 'deployer:check', function () {
 
     echo <<<EOL
 REPO='{$repo}'
+BRANCH='{$branch}'
 DIR='{$prod_dir}'
 STAGE_DIR='{$stage_dir}'
 USERNAME='{$prod_user}'
