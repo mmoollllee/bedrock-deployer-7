@@ -20,13 +20,9 @@ namespace Deployer;
 require(__DIR__ . '/../lib/functions.php');
 
 set('bin/wp', function () {
-    if (commandExist('wp')) {
-        return '{{bin/php}} ' . which('wp');
-    }
-
-    warning("WP CLI binary wasn't found. Installing latest WP CLI to \"{{deploy_path}}/.dep/composer.phar\".");
-    run("cd {{deploy_path}} && curl -sS -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar");
-    run('mv {{deploy_path}}/wp-cli.phar {{deploy_path}}/.dep/wp-cli.phar');
+    run("if ! [ -f {{deploy_path}}/.dep/wp-cli.phar ]; then
+    curl -o {{deploy_path}}/.dep/wp-cli.phar -sS -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+  fi");
     return '{{bin/php}} {{deploy_path}}/.dep/wp-cli.phar';
 });
 
