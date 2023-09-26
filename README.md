@@ -32,14 +32,12 @@ The available recipes:
 ## Bedrock DB
 Provides tasks to export the database from the server and import it to your development machine and vice versa.
 
-There is a recipe for Trellis / Vagrant as well as a recipe for Valet+ environments.
-
 ### Trellis / Vagrant environment
 
 Requirements:
 
-- Vagrant **running** on your local machine (or Trellis, of course)
-- WP CLI running on your Vagrant as well as on your remote machine
+- Virtual Machine (Vagrant, Lima,...) **running** on your local machine (or Trellis, of course)
+- WP CLI running on your Virtual Machine as well as on your remote machine
 
 Load into your deploy.php file with:
 
@@ -50,15 +48,16 @@ require 'vendor/mmoollllee/bedrock-deployer/recipe/bedrock_db.php';
 Requires these Deployer environment variables to be set:
 
 - local_root: Absolute path to website root directory on local host machine
-- vagrant_dir: Absolute path to directory that contains .vagrantfile
-- vagrant_root: Absolute path to website inside Vagrant machine (should mirror local_root)
+- trellis_dir: Absolute path to directory that contains trellis
+- vm_root: Absolute path to website inside Virtual machine (should mirror local_root)
+- vm_shell: Virtual Machine SSH Prefix (e.g. `vagrant ssh -- -t`)
 
 Example:
 
 ````php
 set( 'local_root', dirname( __FILE__ ) );
-set( 'vagrant_dir', dirname( __FILE__ ) . '/../trellis' );
-set( 'vagrant_root', '/srv/www/domain.com/current' );
+set( 'trellis_dir', dirname( __FILE__ ) . '/../trellis' );
+set( 'vm_root', '/srv/www/domain.com/current' );
 ````
 
 ### Valet+ environment

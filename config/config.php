@@ -32,8 +32,9 @@ set( 'shared_dirs', ['web/app/uploads'] );
 set( 'domain', basename(get('local_root')) );
 
 // Bedrock DB config
-set( 'vagrant_dir', get('local_root') . '/../trellis' );
-set( 'vagrant_root', '/srv/www/' . get('domain') . '/current' );
+set( 'trellis_dir', get('local_root') . '/../trellis' );
+set( 'vm_root', '/srv/www/' . get('domain') . '/current' );
+set( 'vm_shell', 'trellis vm shell --' ); // or 'vagrant ssh -- -t'
 
 // Bedrock DB and Sage config
 set( 'theme_path', function () { return getenv('THEME_PATH'); });
