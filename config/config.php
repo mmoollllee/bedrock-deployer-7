@@ -34,7 +34,7 @@ set( 'domain', basename(get('local_root')) );
 // Bedrock DB config
 set( 'trellis_dir', get('local_root') . '/../trellis' );
 set( 'vm_root', '/srv/www/' . get('domain') . '/current' );
-set( 'vm_shell', 'trellis vm shell --' ); // or 'vagrant ssh -- -t'
+set( 'vm_shell', 'trellis vm shell --workdir ' . get('vm_root') . ' --' );
 
 // Bedrock DB and Sage config
 set( 'theme_path', function () { return getenv('THEME_PATH'); });

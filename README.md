@@ -50,7 +50,7 @@ Requires these Deployer environment variables to be set:
 - local_root: Absolute path to website root directory on local host machine
 - trellis_dir: Absolute path to directory that contains trellis
 - vm_root: Absolute path to website inside Virtual machine (should mirror local_root)
-- vm_shell: Virtual Machine SSH Prefix (e.g. `vagrant ssh -- -t`)
+- vm_shell: Virtual Machine SSH Pattern (e.g. `vagrant ssh -- -t cd {{vm_root}}`)
 
 Example:
 
@@ -58,6 +58,7 @@ Example:
 set( 'local_root', dirname( __FILE__ ) );
 set( 'trellis_dir', dirname( __FILE__ ) . '/../trellis' );
 set( 'vm_root', '/srv/www/domain.com/current' );
+set( 'vm_shell', 'trellis vm shell --workdir ' . get('vm_root') . ' --' );
 ````
 
 ### Valet+ environment
