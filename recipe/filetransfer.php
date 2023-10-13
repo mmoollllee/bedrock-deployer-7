@@ -40,7 +40,7 @@ desc( 'Download sync directories from server to local' );
 task( 'pull:files-no-bak', function () {
 
     foreach ( get( 'sync_dirs' ) as $localDir => $serverDir ) {
-        download( $localDir, $serverDir, [ "options" => ['--exclude=_backup_*.zip']] );
+        download( $serverDir, $localDir, [ "options" => ['--exclude=_backup_*.zip']] );
     };
 
 } );
