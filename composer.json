@@ -1,5 +1,5 @@
 {
-    "name": "mmoollllee/bedrock-deployer",
+    "name": "mmoollllee/bedrock-deployer-7",
     "description": "Deployer recipes for Roots Bedrock",
     "require": {
         "deployer/deployer": "^7.0",
