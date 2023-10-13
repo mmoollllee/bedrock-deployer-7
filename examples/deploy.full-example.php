@@ -14,7 +14,7 @@ $stage_hostname = $hostname;
 // get directory of projects. Will be used for domain name,...
 set( 'local_root', dirname( __FILE__ ) );
 
-require 'vendor/mmoollllee/bedrock-deployer/config/config.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/config/config.php';
 
 // set 
 host( 'stage' )
