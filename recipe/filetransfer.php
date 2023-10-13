@@ -25,7 +25,7 @@ desc( 'Upload sync directories from local to server' );
 task( 'push:files-no-bak', function () {
 
     foreach ( get( 'sync_dirs' ) as $localDir => $serverDir ) {
-        upload( $localDir, $serverDir, ['--exclude "_backup_*.zip"'] );
+        upload( $localDir, $serverDir, [ "options" => ['--exclude=_backup_*.zip']] );
     };
 
 } );
@@ -40,7 +40,7 @@ desc( 'Download sync directories from server to local' );
 task( 'pull:files-no-bak', function () {
 
     foreach ( get( 'sync_dirs' ) as $localDir => $serverDir ) {
-        download( $serverDir, $localDir, ['--exclude "_backup_*.zip"'] );
+        download( $localDir, $serverDir, [ "options" => ['--exclude=_backup_*.zip']] );
     };
 
 } );
