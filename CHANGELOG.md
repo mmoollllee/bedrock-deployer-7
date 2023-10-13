@@ -1,3 +1,5 @@
+### 1.0.5
+- Fix: Package Paths
 ### 1.0.4
 
 - Renamed repository to bedrock-deployer-7
