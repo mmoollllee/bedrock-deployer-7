@@ -1,5 +1,6 @@
-# bedrock-deployer
-[Deployer](https://deployer.org/) recipes for [Roots Bedrock](https://roots.io/bedrock/), also supports [Roots Sage](https://roots.io/sage/) and [Roots Trellis](https://roots.io/trellis/) setups.
+# bedrock-deployer-7
+[Deployer 7](https://deployer.org/) recipes for [Roots Bedrock](https://roots.io/bedrock/), also supports [Roots Sage](https://roots.io/sage/) and [Roots Trellis](https://roots.io/trellis/) setups.
+Based on the work by [FlorianMoser](https://github.com/FlorianMoser/bedrock-deployer)
 
 Trellis provides a powerful deployment with Ansible. But if you would like to deploy Bedrock only while running a custom process, Deployer is a quick and simple alternative.
 
@@ -8,31 +9,31 @@ Maybe you are even trying to deploy Bedrock to a shared hosting like Plesk. Depe
 **A word of caution:** Make sure you have a backup of your local as well as your remote files, before experimenting with deployment recipes. Files might easily get overwritten when you provide wrong paths! You are solely responsible by using the recipes provided here.
 
 ## Who needs this
-PHP developers who would like to deploy their Bedrock applications using Deployer.
+PHP developers who would like to deploy their Bedrock applications using Deployer v7.
 
 ## Installation
 Use Composer:
 
 ````
-$ composer require mmoollllee/bedrock-deployer
+$ composer require mmoollllee/bedrock-deployer-7
 ````
 
 Setup your Trellis & Bedrock environment and create a repository. The repository may contain a trellis and a site folder, or
 the bedrock project [example](https://github.com/mmoollllee/bedrock)
 
-Create a deploy.php in your project root and configure your environments. You might want to use [examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/examples/deploy.full-example.php) and have a look at its required [config file]([examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/config/config.php)). If so first run will create a `.env.deployer` and ask for your project's details.
+Create a deploy.php in your project root and configure your environments. You might want to use [examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer-7/blob/master/examples/deploy.full-example.php) and have a look at its required [config file]([examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer-7/blob/master/config/config.php)). If so, first run will create a `.env.deployer` and ask for your project's details.
 
 First run with `vendor/bin/dep -vvv deploy` & select target environment.
 
 # Recipes
-This package offers several recipes to help you with your Bedrock deployment. Require each package as needed or use the example configuration file in [examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/examples/deploy.full-example.php) and have a look at its required [config file]([examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer/blob/master/config/config.php)).
+This package offers several recipes to help you with your Bedrock deployment. Require each package as needed or use the example configuration file in [examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer-7/blob/master/examples/deploy.full-example.php) and have a look at its required [config file]([examples/deploy.full-example.php](https://github.com/mmoollllee/bedrock-deployer-7/blob/master/config/config.php)).
 
 The available recipes:
 
 ## Bedrock DB
 Provides tasks to export the database from the server and import it to your development machine and vice versa.
 
-### Trellis / Vagrant environment
+### Trellis / VM / Vagrant environment
 
 Requirements:
 
@@ -42,7 +43,7 @@ Requirements:
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/mmoollllee/bedrock-deployer/recipe/bedrock_db.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/recipe/bedrock_db.php';
 ````
 
 Requires these Deployer environment variables to be set:
@@ -70,7 +71,7 @@ Requirements:
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/florianmoser/bedrock-deployer/recipe/bedrock_valetplus_db.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/recipe/bedrock_valetplus_db.php';
 ````
 
 Requires these Deployer environment variables to be set:
@@ -103,7 +104,7 @@ Provides tasks to manage the .env file on the server.
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/florianmoser/bedrock-deployer/recipe/bedrock_env.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/recipe/bedrock_env.php';
 ````
 
 Requires no special Deployer environment variables to be set.
@@ -119,7 +120,7 @@ Provides miscellaneous Bedrock tasks.
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/florianmoser/bedrock-deployer/recipe/bedrock_misc.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/recipe/bedrock_misc.php';
 ````
 
 Requires no special Deployer environment variables to be set.
@@ -137,7 +138,7 @@ Requirements:
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/florianmoser/bedrock-deployer/recipe/common.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/recipe/common.php';
 ````
 
 Requires no special Deployer environment variables to be set.
@@ -151,7 +152,7 @@ Provides tasks to upload/download files from/to synced directories.
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/florianmoser/bedrock-deployer/recipe/filetransfer.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/recipe/filetransfer.php';
 ````
 
 Requires these Deployer environment variables to be set:
@@ -185,12 +186,12 @@ Provides tasks to deploy Roots Sage theme.
 
 Requirements:
 
-- Roots Sage 9.0.*
+- Roots Sage 10 (also supports Sage 9, see the included /examples/deploy.full-example.php on how to use with Sage 9)
 
 Load into your deploy.php file with:
 
 ````php
-require 'vendor/florianmoser/bedrock-deployer/recipe/sage.php';
+require 'vendor/mmoollllee/bedrock-deployer-7/recipe/sage.php';
 ````
 
 Requires these Deployer environment variables to be set:
