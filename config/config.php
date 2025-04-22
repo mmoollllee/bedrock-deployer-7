@@ -10,9 +10,9 @@ require(__DIR__ . '/../../../autoload.php');
 
 use Dotenv\Dotenv;
 
-// .env will be generated on first run.
-if (file_exists(get('local_root').'/.env')) {
-	$localEnv = Dotenv::createUnsafeImmutable(get('local_root'), '.env');
+// .env.deployer will be generated on first run.
+if (file_exists(get('local_root').'/.env.deployer')) {
+	$localEnv = Dotenv::createUnsafeImmutable(get('local_root'), '.env.deployer');
 	$localEnv->load();
 }
 
@@ -25,9 +25,9 @@ set('bin/composer', function () { return '/opt/plesk/php/8.1/bin/php /usr/lib/pl
 set('composer_options', 'install --verbose --no-interaction');
 
 // Common Deployer config
-set('keep_releases', function () { return getenv('DEP_KEEP_RELEASES'); });
-set( 'repository', function () { return getenv('DEP_REPO'); });
-set('branch', function () { return getenv('DEP_BRANCH') ?: 'master'; });
+set('keep_releases', function () { return getenv('KEEP_RELEASES'); });
+set( 'repository', function () { return getenv('REPO'); });
+set('branch', function () { return getenv('BRANCH') ?: 'master'; });
 set( 'shared_dirs', ['web/app/uploads'] );
 set( 'domain', basename(get('local_root')) );
 
@@ -37,7 +37,7 @@ set( 'vm_root', '/srv/www/' . get('domain') . '/current' );
 set( 'vm_shell', 'trellis vm shell --workdir ' . get('vm_root') . ' --' );
 
 // Bedrock DB and Sage config
-set( 'theme_path', function () { return getenv('DEP_THEME_PATH'); });
+set( 'theme_path', function () { return getenv('THEME_PATH'); });
 
 // File transfer config
 set( 'sync_dirs', [
