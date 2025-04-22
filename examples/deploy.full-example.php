@@ -16,6 +16,11 @@ set( 'local_root', dirname( __FILE__ ) );
 
 require 'vendor/mmoollllee/bedrock-deployer-7/config/config.php';
 
+// additional search and replace operations in database where key is local and value is remote
+set('local_remote', [
+	'example.test' => 'www.example.com',
+]);
+
 // set 
 host( 'stage' )
 	->setHostname( $stage_hostname )

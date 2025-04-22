@@ -83,6 +83,16 @@ task('pull:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     // Flush Permalinks
     runLocally( "cd {{trellis_dir}} && {{vm_shell}} wp rewrite flush --hard" );
 
+    // Perform additional search and replace operations
+    $local_remote = get('local_remote');
+    writeln($local_remote);
+    if (isset($local_remote) && is_array($local_remote)) {
+        foreach ($local_remote as $local => $remote) {
+            writeln("<comment>Replacing '{$local}' with '{$remote}' in the DB</comment>");
+            runLocally("cd {{trellis_dir}} && {{vm_shell}} wp search-replace '{$local}' '{$remote}' --skip-themes --network");
+        }
+    }
+
     // Cleanup exports on local machine
     writeln("<comment>Cleaning up {$downloadedExport} on local machine</comment>");
     runLocally("rm {$downloadedExport}");
@@ -142,6 +152,16 @@ task('push:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     run("cd {{current_path}} && {{bin/wp}} search-replace \"{$localUrl}\" \"{$remoteUrl}\" --skip-themes --url='{$localDomain}' --network");
     // Also replace domain (multisite WP also uses domains without protocol in DB)
     run("cd {{current_path}} && {{bin/wp}} search-replace \"{$localDomain}\" \"{$remoteDomain}\" --skip-themes --url='{$localDomain}' --network");
+
+    // Perform additional search and replace operations
+    $local_remote = get('local_remote');
+    if (isset($local_remote) && is_array($local_remote)) {
+        foreach ($local_remote as $local => $remote) {
+            writeln("<comment>Replacing '{$local}' with '{$remote}' in the DB</comment>");
+            run("cd {{current_path}} && {{bin/wp}} search-replace \"{$local}\" \"{$remote}\" --skip-themes --network");
+        }
+    }
+
     // Flush Permalinks
     run( "cd {{current_path}} && {{bin/wp}} rewrite flush --hard" );
     
