@@ -163,7 +163,7 @@ task('push:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
         writeln(print_r($local_remote));
         foreach ($local_remote as $local => $remote) {
             writeln("<comment>Replacing '{$local}' with '{$remote}' in the DB</comment>");
-            runLocally("cd {{trellis_dir}} && {{vm_shell}} wp search-replace '{$local}' '{$remote}' --skip-themes --network");
+            run("cd {{trellis_dir}} && {{vm_shell}} wp search-replace '{$local}' '{$remote}' --skip-themes --network");
         }
     }
 
