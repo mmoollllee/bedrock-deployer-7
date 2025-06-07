@@ -56,15 +56,19 @@ task('pull:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
 
     // Import export file
     writeln("<comment>Importing {$downloadedExport}</comment>");
+    // Remove sandbox mode from export file, if it exists
+    // This is necessary, because the export file may contain sandbox mode settings
+    // which will cause the import to fail.
+    runLocally("sed -i '' '/sandbox mode/d' {$downloadedExport}");
     runLocally("cd {{trellis_dir}} && {{vm_shell}} wp db import {$exportFilename}");
-
-    // Load local .env file and get local WP URL
-    if (!$localUrl = $getLocalEnv()) {
-        return;
-    }
 
     // Load remote .env file and get remote WP URL
     if (!$remoteUrl = $getRemoteEnv()) {
+        return;
+    }
+
+    // Load local .env file and get local WP URL
+    if (!$localUrl = $getLocalEnv()) {
         return;
     }
 
@@ -85,11 +89,11 @@ task('pull:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
 
     // Perform additional search and replace operations
     $local_remote = get('local_remote');
-    writeln($local_remote);
     if (isset($local_remote) && is_array($local_remote)) {
+        writeln(print_r($local_remote));
         foreach ($local_remote as $local => $remote) {
-            writeln("<comment>Replacing '{$local}' with '{$remote}' in the DB</comment>");
-            runLocally("cd {{trellis_dir}} && {{vm_shell}} wp search-replace '{$local}' '{$remote}' --skip-themes --network");
+            writeln("<comment>Replacing '{$remote}' with '{$local}' in the DB</comment>");
+            runLocally("cd {{trellis_dir}} && {{vm_shell}} wp search-replace '{$remote}' '{$local}' --skip-themes --network");
         }
     }
 
@@ -130,13 +134,13 @@ task('push:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     writeln("<comment>Importing {$uploadedExport}</comment>");
     run("cd {{current_path}} && {{bin/wp}} db import {$uploadedExport}");
 
-    // Load local .env file and get local WP URL
-    if (!$localUrl = $getLocalEnv()) {
+    // Load remote .env file and get remote WP URL
+    if (!$remoteUrl = $getRemoteEnv()) {
         return;
     }
 
-    // Load remote .env file and get remote WP URL
-    if (!$remoteUrl = $getRemoteEnv()) {
+    // Load local .env file and get local WP URL
+    if (!$localUrl = $getLocalEnv()) {
         return;
     }
 
@@ -156,9 +160,10 @@ task('push:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     // Perform additional search and replace operations
     $local_remote = get('local_remote');
     if (isset($local_remote) && is_array($local_remote)) {
+        writeln(print_r($local_remote));
         foreach ($local_remote as $local => $remote) {
             writeln("<comment>Replacing '{$local}' with '{$remote}' in the DB</comment>");
-            run("cd {{current_path}} && {{bin/wp}} search-replace \"{$local}\" \"{$remote}\" --skip-themes --network");
+            runLocally("cd {{trellis_dir}} && {{vm_shell}} wp search-replace '{$local}' '{$remote}' --skip-themes --network");
         }
     }
 

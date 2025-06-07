@@ -13,7 +13,7 @@ use Dotenv\Dotenv;
  */
 if (!isset($getLocalEnv)) {
     $getLocalEnv = function () {
-        $localEnv = Dotenv::createUnsafeImmutable(get('local_root'), '.env');
+        $localEnv = Dotenv::createUnsafeMutable(get('local_root'), '.env');
         $localEnv->load();
         $localUrl = getenv('WP_HOME');
 
@@ -38,7 +38,7 @@ if (!isset($getRemoteEnv)) {
     $getRemoteEnv = function () {
         $tmpEnvFile = get('local_root') . '/.env-remote';
         download(get('current_path') . '/.env', $tmpEnvFile);
-        $remoteEnv = Dotenv::createUnsafeImmutable(get('local_root'), '.env-remote');
+        $remoteEnv = Dotenv::createUnsafeMutable(get('local_root'), '.env-remote');
         $remoteEnv->load();
         $remoteUrl = getenv('WP_HOME');
         // Cleanup tempfile
