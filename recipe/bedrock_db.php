@@ -60,7 +60,23 @@ task('pull:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     // This is necessary, because the export file may contain sandbox mode settings
     // which will cause the import to fail.
     runLocally("sed -i '' '/sandbox mode/d' {$downloadedExport}");
-    runLocally("cd {{trellis_dir}} && {{vm_shell}} wp db import {$exportFilename}");
+    try {
+        runLocally("cd {{trellis_dir}} && {{vm_shell}} wp db import {$exportFilename}");
+    } catch (\Throwable $e) {
+        $errorText = $e->getMessage();
+        if (method_exists($e, 'getOutput')) {
+            $errorText .= "\n" . $e->getOutput();
+        }
+        if (method_exists($e, 'getErrorOutput')) {
+            $errorText .= "\n" . $e->getErrorOutput();
+        }
+        if (strpos($errorText, "Unknown command '\\-'") === false) {
+            throw $e;
+        }
+        writeln("<comment>Import failed due to leading line in export; removing first line and retrying</comment>");
+        runLocally("sed -i '' '1d' {$downloadedExport}");
+        runLocally("cd {{trellis_dir}} && {{vm_shell}} wp db import {$exportFilename}");
+    }
 
     // Load remote .env file and get remote WP URL
     if (!$remoteUrl = $getRemoteEnv()) {
