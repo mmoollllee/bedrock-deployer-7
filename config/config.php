@@ -36,6 +36,14 @@ set( 'trellis_dir', get('local_root') . '/../trellis' );
 set( 'vm_root', '/srv/www/' . get('domain') . '/current' );
 set( 'vm_shell', 'trellis vm shell --workdir ' . get('vm_root') . ' --' );
 
+// Extra options appended to every WP-CLI `db` subcommand that runs on the server.
+// Those subcommands shell out to the mysql/mariadb client binaries, and since
+// MariaDB Connector/C 3.4 the client verifies the database server's certificate by
+// default. Hosts whose database presents a self-signed certificate need
+// '--ssl-verify-server-cert=0' here, which keeps the connection encrypted but skips
+// the untrusted-chain check.
+set( 'db_cli_args', '' );
+
 // Bedrock DB and Sage config
 set( 'theme_path', function () { return getenv('THEME_PATH'); });
 

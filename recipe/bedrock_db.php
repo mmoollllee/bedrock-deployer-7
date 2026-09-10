@@ -33,7 +33,7 @@ task('pull:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     $exportFilename = '_db_export_' . date('Y-m-d_H-i-s') . '.sql';
     $exportAbsFile  = get('deploy_path') . '/' . $exportFilename;
     writeln("<comment>Exporting server DB to {$exportAbsFile}</comment>");
-    run("cd {{current_path}} && {{bin/wp}} db export {$exportAbsFile}");
+    run("cd {{current_path}} && {{bin/wp}} db export {$exportAbsFile} {{db_cli_args}}");
 
     // Download db export
     $downloadedExport = get('local_root') . '/' . $exportFilename;
@@ -140,15 +140,15 @@ task('push:db', function () use ($getLocalEnv, $getRemoteEnv, $urlToDomain) {
     $backupFilename = '_db_backup_' . date('Y-m-d_H-i-s') . '.sql';
     $backupAbsFile  = get('deploy_path') . '/' . $backupFilename;
     writeln("<comment>Making backup of DB on server to {$backupAbsFile}</comment>");
-    run("cd {{current_path}} && {{bin/wp}} db export {$backupAbsFile}");
+    run("cd {{current_path}} && {{bin/wp}} db export {$backupAbsFile} {{db_cli_args}}");
 
     // Empty server DB
     writeln("<comment>Reset server DB</comment>");
-    run("cd {{current_path}} && {{bin/wp}} db reset");
+    run("cd {{current_path}} && {{bin/wp}} db reset {{db_cli_args}}");
 
     // Import export file
     writeln("<comment>Importing {$uploadedExport}</comment>");
-    run("cd {{current_path}} && {{bin/wp}} db import {$uploadedExport}");
+    run("cd {{current_path}} && {{bin/wp}} db import {$uploadedExport} {{db_cli_args}}");
 
     // Load remote .env file and get remote WP URL
     if (!$remoteUrl = $getRemoteEnv()) {
