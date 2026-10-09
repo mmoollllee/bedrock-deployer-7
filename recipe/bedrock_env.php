@@ -1,52 +1,85 @@
 <?php
 
 /**
- * Manages the Bedrock .env file on the server. If not previous
- * release is available, the task asks for credentials and options,
- * generates salts and stores them in a new .env file in the current
- * release.
+ * Manages the Bedrock .env file on the server.
  *
- * If a previous release is available, the .env file is copied from
- * that release to the current release.
+ * The .env file of the live release is copied into the new release. If the
+ * live release has none, the newest release that has one is used: an aborted
+ * deploy leaves a release without .env behind, and Deployer still counts it
+ * as previous_release.
+ *
+ * Only if no release has a .env file, the task asks for credentials and
+ * options, generates salts and writes a new one. It refuses to do so without
+ * an interactive terminal, so a deploy with --no-interaction can never create
+ * a .env file from default answers (empty DB password).
  */
 
 namespace Deployer;
 
+use Deployer\Exception\Exception;
+
+/**
+ * Generates a random token with a length of 64 chars.
+ *
+ * Bases on wp_generate_password() function.
+ *
+ * @return string
+ */
+function bedrock_generate_salt() {
+    $chars              = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_ []{}<>~+=,.;:/?|';
+    $char_option_length = strlen( $chars ) - 1;
+
+    $password = '';
+    for ( $i = 0; $i < 64; $i ++ ) {
+        $password .= substr( $chars, random_int( 0, $char_option_length ), 1 );
+    }
+
+    return $password;
+}
+
+/**
+ * Quotes a value for the .env file.
+ *
+ * phpdotenv takes single-quoted values literally but cannot escape a single
+ * quote inside them, so such values are double-quoted with backslash escapes.
+ *
+ * @param string $value
+ *
+ * @return string
+ */
+function bedrock_env_value( $value ) {
+    if ( strpos( $value, "'" ) === false ) {
+        return "'" . $value . "'";
+    }
+
+    return '"' . addcslashes( $value, '"\\' ) . '"';
+}
+
 /*
- * Tries to copy .env file from previous release to current release.
- * If not available, the .env file is created while prompting the
+ * Copies the .env file of the live release, or of the newest release that
+ * has one. If there is none, the .env file is created while prompting the
  * user for credentials.
  */
 desc( 'Makes sure, .env file for Bedrock is available' );
 task( 'bedrock:env', function () {
 
-    // Try to copy .env file from previous release to current release
+    $sources = [ '{{current_path}}/.env' ];
     if ( has( 'previous_release' ) ) {
-        if ( test( "[ -f {{previous_release}}/.env ]" ) ) {
-            run( "cp {{previous_release}}/.env {{release_path}}" );
+        $sources[] = '{{previous_release}}/.env';
+    }
+    foreach ( get( 'releases_list' ) as $release ) {
+        $sources[] = "{{deploy_path}}/releases/{$release}/.env";
+    }
+
+    foreach ( $sources as $source ) {
+        if ( test( "[ -f {$source} ]" ) ) {
+            run( "cp {$source} {{release_path}}/.env" );
             return;
         }
     }
 
-    // If previous .env file is not available, create one
-
-    /**
-     * Generates a random token with a length of 64 chars.
-     *
-     * Bases on wp_generate_password() function.
-     *
-     * @return string
-     */
-    function generate_salt() {
-        $chars              = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_ []{}<>~+=,.;:/?|';
-        $char_option_length = strlen( $chars ) - 1;
-
-        $password = '';
-        for ( $i = 0; $i < 64; $i ++ ) {
-            $password .= substr( $chars, random_int( 0, $char_option_length ), 1 );
-        }
-
-        return $password;
+    if ( ! input()->isInteractive() ) {
+        throw new Exception( 'No .env file found in the current or any other release. Run the deploy without --no-interaction to create one.' );
     }
 
     // Keys that require a salt token
@@ -72,35 +105,31 @@ task( 'bedrock:env', function () {
     $wp_env  = askChoice( get( 'stage' ) . ' server ENV', ['development' => 'development', 'staging' => 'staging', 'production' => 'production'], 'staging' );
     $wp_prot = askChoice( get( 'stage' ) . ' server protocol', ['http' => 'http', 'https' => 'https'], 'http' );
 
-    set('absolute_path', function () {
-        return run('cd {{deploy_path}} && pwd');
-    });
-    $wpcachehome = '{{absolute_path}}/current/web/app/plugins/wp-super-cache/';
-    $wpcachepath = '{{absolute_path}}/current/web/app/cache/';
+    $absolute_path = run( 'cd {{deploy_path}} && pwd' );
 
-
-    ob_start();
-
-    echo <<<EOL
-DB_NAME='{$db_name}'
-DB_USER='{$db_user}'
-DB_PASSWORD='{$db_pass}'
-DB_HOST='{$db_host}'
-WP_ENV='{$wp_env}'
-WP_HOME='{$wp_prot}://{$wp_domain}'
-WP_SITEURL='{$wp_prot}://{$wp_domain}/wp'
-DOMAIN_CURRENT_SITE='{$wp_domain}'
-PROTOCOL='{$wp_prot}'
-WPCACHEHOME='{$wpcachehome}'
-CACHE_PATH='{$wpcachepath}'
-
-EOL;
-
+    $values = [
+        'DB_NAME'             => $db_name,
+        'DB_USER'             => $db_user,
+        'DB_PASSWORD'         => (string) $db_pass,
+        'DB_HOST'             => $db_host,
+        'WP_ENV'              => $wp_env,
+        'WP_HOME'             => "{$wp_prot}://{$wp_domain}",
+        'WP_SITEURL'          => "{$wp_prot}://{$wp_domain}/wp",
+        'DOMAIN_CURRENT_SITE' => $wp_domain,
+        'PROTOCOL'            => $wp_prot,
+        'WPCACHEHOME'         => "{$absolute_path}/current/web/app/plugins/wp-super-cache/",
+        'CACHE_PATH'          => "{$absolute_path}/current/web/app/cache/",
+    ];
     foreach ( $salt_keys as $key ) {
-        echo $key . "='" . generate_salt() . "'" . PHP_EOL;
+        $values[ $key ] = bedrock_generate_salt();
     }
 
-    $content = ob_get_clean();
+    $content = '';
+    foreach ( $values as $key => $value ) {
+        $content .= $key . '=' . bedrock_env_value( $value ) . PHP_EOL;
+    }
 
-    run( 'echo "' . $content . '" > {{release_path}}/.env' );
+    // Base64 keeps salts and passwords away from shell expansion and from
+    // Deployer's {{placeholders}}; %secret% keeps them out of the output.
+    run( 'echo %secret% | base64 -d > {{release_path}}/.env', secret: base64_encode( $content ) );
 } );
